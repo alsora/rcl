@@ -357,11 +357,10 @@ _trigger_transition(
 
   RCL_CHECK_FOR_NULL_WITH_MSG(
     transition->goal, "No valid goal is set.", return RCL_RET_INVALID_ARGUMENT);
-  state_machine->current_state = transition->goal;
 
   if (publish_notification) {
     rcl_ret_t fcn_ret = rcl_lifecycle_com_interface_publish_notification(
-      &state_machine->com_interface, transition->start, state_machine->current_state);
+      &state_machine->com_interface, transition->start, transition->goal);
     if (fcn_ret != RCL_RET_OK) {
       rcl_error_string_t error_string = rcl_get_error_string();
       rcutils_reset_error();
@@ -369,6 +368,8 @@ _trigger_transition(
       return RCL_RET_ERROR;
     }
   }
+
+  state_machine->current_state = transition->goal;
 
   TRACEPOINT(
     rcl_lifecycle_transition,
